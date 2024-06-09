@@ -1,0 +1,11 @@
+# Используем официальный образ Maven для сборки проекта
+FROM maven:3.8.4-openjdk-11 AS build
+WORKDIR /app
+COPY . .
+RUN mvn clean package -DskipTests
+
+# Используем официальный образ OpenJDK для запуска приложения
+FROM openjdk:11-jre-slim
+WORKDIR /app
+COPY --from=build /app/target/ticket-system-1.0-SNAPSHOT.jar /app/ticket-system-auth.jar
+ENTRYPOINT ["java", "-jar", "/app/ticket-system-auth.jar"]
